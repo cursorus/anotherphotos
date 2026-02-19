@@ -1,0 +1,9 @@
+{
+  "name": "album-viewer",
+  "version": "1.0.0",
+  "description": "Album viewer with proxy",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
