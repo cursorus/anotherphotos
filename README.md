@@ -47,7 +47,6 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 
 > [!TIP]
-
 > ### Изменить количество загружаемых за раз элементов:
 
 В `api/proxy.js` измените:
