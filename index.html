@@ -191,15 +191,32 @@
         <h1>🖼️ Album Viewer</h1>
 
         <div id="needsSetup" class="warning-box">
-            <h3>⚠️ Stay Extension Required</h3>
-            <p>This page needs the Stay Safari extension to work.</p>
-            <p style="margin-top: 10px;">
-                <strong>Setup Steps:</strong><br>
-                1. Install <strong>Stay</strong> app from App Store<br>
-                2. Add the userscript (see instructions below)<br>
-                3. Visit joinswsh.com and open any album<br>
-                4. Come back here - it will work automatically!
-            </p>
+            <h3>⚠️ No Tokens Found</h3>
+            <p>Tokens not detected automatically. You have two options:</p>
+            
+            <div style="margin-top: 15px;">
+                <strong>Option 1: Auto-sync (Recommended)</strong><br>
+                <button class="button" onclick="openJoinswshForTokens()">Open joinswsh.com to Capture Tokens</button>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">
+                    This will open joinswsh.com in a new tab. After opening an album there, come back here.
+                </p>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <strong>Option 2: Manual Import</strong><br>
+                <button class="button secondary" onclick="showImportDialog()">Import Tokens Manually</button>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">
+                    Copy tokens from joinswsh.com (click "📋 Copy Tokens" button) and paste here.
+                </p>
+            </div>
+        </div>
+
+        <div id="importDialog" style="display: none;" class="info-box">
+            <h3>Import Tokens</h3>
+            <p>Paste the JSON you copied from joinswsh.com:</p>
+            <textarea id="tokenInput" style="width: 100%; height: 150px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 10px; font-family: monospace; margin: 10px 0;"></textarea>
+            <button class="button" onclick="importTokens()">Import</button>
+            <button class="button secondary" onclick="cancelImport()">Cancel</button>
         </div>
 
         <div class="info-box" id="tokenStatus" style="display: none;">
@@ -254,6 +271,89 @@
 
         // Check for tokens on page load
         window.addEventListener('load', checkTokens);
+
+        // Listen for messages from joinswsh.com window
+        window.addEventListener('message', function(event) {
+            console.log('[Album Viewer] Message received:', event.data);
+            
+            if (event.data.type === 'TOKENS_RESPONSE') {
+                if (event.data.token) {
+                    localStorage.setItem('swsh_auth_token', event.data.token);
+                    console.log('[Album Viewer] Token received and saved');
+                }
+                if (event.data.gatheringId) {
+                    localStorage.setItem('swsh_gathering_id', event.data.gatheringId);
+                    console.log('[Album Viewer] Gathering ID received and saved');
+                }
+                
+                // Refresh the page to show new tokens
+                checkTokens();
+            }
+        });
+
+        function openJoinswshForTokens() {
+            const popup = window.open('https://www.joinswsh.com', 'joinswsh_tokens', 'width=800,height=600');
+            
+            if (popup) {
+                showStatus('✅ Opened joinswsh.com. Open an album there, then come back here!');
+                
+                // Request tokens every 2 seconds
+                const interval = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(interval);
+                        checkTokens();
+                        return;
+                    }
+                    
+                    try {
+                        popup.postMessage({ type: 'REQUEST_TOKENS' }, '*');
+                    } catch (e) {
+                        // Ignore errors
+                    }
+                }, 2000);
+            } else {
+                showStatus('❌ Popup blocked! Please allow popups for this site.', true);
+            }
+        }
+
+        function showImportDialog() {
+            document.getElementById('needsSetup').style.display = 'none';
+            document.getElementById('importDialog').style.display = 'block';
+        }
+
+        function cancelImport() {
+            document.getElementById('importDialog').style.display = 'none';
+            document.getElementById('needsSetup').style.display = 'block';
+        }
+
+        function importTokens() {
+            const input = document.getElementById('tokenInput').value.trim();
+            
+            if (!input) {
+                alert('Please paste the JSON!');
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(input);
+                
+                if (data.token && data.token !== 'Not captured yet') {
+                    localStorage.setItem('swsh_auth_token', data.token);
+                    showStatus('✅ Token imported!');
+                }
+                
+                if (data.gatheringId && data.gatheringId !== 'Not captured yet') {
+                    localStorage.setItem('swsh_gathering_id', data.gatheringId);
+                    showStatus('✅ Gathering ID imported!');
+                }
+                
+                document.getElementById('importDialog').style.display = 'none';
+                checkTokens();
+                
+            } catch (e) {
+                alert('Invalid JSON! Make sure you copied the full JSON from the "📋 Copy Tokens" button.');
+            }
+        }
 
         function checkTokens() {
             // Try to get from localStorage (set by Stay extension)
