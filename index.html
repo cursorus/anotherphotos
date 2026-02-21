@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Album Viewer</title>
+    <title>Album Viewer - Stay Extension</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * {
@@ -110,112 +110,6 @@
             z-index: 1001;
         }
 
-        .error {
-            color: #ff4444;
-            text-align: center;
-            padding: 20px;
-            background: #2a1a1a;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .config-form {
-            background: #1a1a1a;
-            padding: 30px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        .config-form label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .config-form input {
-            width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .config-form button {
-            width: 100%;
-            padding: 14px;
-            background: #0066ff;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .config-form button:hover {
-            background: #0052cc;
-        }
-
-        .config-form button:disabled {
-            background: #444;
-            cursor: not-allowed;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .button-group button {
-            flex: 1;
-        }
-
-        .secondary-btn {
-            background: #2a2a2a !important;
-        }
-
-        .secondary-btn:hover {
-            background: #3a3a3a !important;
-        }
-
-        .info-box {
-            background: #1a3a1a;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            line-height: 1.6;
-        }
-
-        .info-box h3 {
-            margin-bottom: 10px;
-            color: #4ade80;
-        }
-
-        .info-box code {
-            background: #2a2a2a;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-
-        .bookmarklet {
-            display: inline-block;
-            background: #0066ff;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 4px;
-            text-decoration: none;
-            margin: 10px 0;
-            font-weight: 600;
-        }
-
         .loading {
             text-align: center;
             padding: 40px;
@@ -244,49 +138,76 @@
             font-size: 0.8em;
             margin-left: 8px;
         }
+
+        .info-box {
+            background: #1a3a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .info-box h3 {
+            color: #4ade80;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: #3a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff4444;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #0066ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 10px 5px;
+        }
+
+        .button:hover {
+            background: #0052cc;
+        }
+
+        .button.secondary {
+            background: #2a2a2a;
+        }
+
+        .button.secondary:hover {
+            background: #3a3a3a;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🖼️ Album Viewer</h1>
 
-        <div class="config-form" id="configForm">
-            <h2 style="margin-bottom: 20px;">Configuration</h2>
-            
-            <label for="gatheringId">Gathering ID (Album ID):</label>
-            <input type="text" id="gatheringId" placeholder="0146b8f3-4c0b-4668-bb2a-89bf6b0e6083">
-            
-            <label for="authSession">Auth Session Token:</label>
-            <input type="text" id="authSession" placeholder="Paste your token here or use bookmarklet">
-            
-            <div class="button-group">
-                <button onclick="loadAlbum()">Load Album</button>
-            </div>
+        <div id="needsSetup" class="warning-box">
+            <h3>⚠️ Stay Extension Required</h3>
+            <p>This page needs the Stay Safari extension to work.</p>
+            <p style="margin-top: 10px;">
+                <strong>Setup Steps:</strong><br>
+                1. Install <strong>Stay</strong> app from App Store<br>
+                2. Add the userscript (see instructions below)<br>
+                3. Visit joinswsh.com and open any album<br>
+                4. Come back here - it will work automatically!
+            </p>
+        </div>
 
-            <div class="info-box">
-                <h3>🎯 How to use:</h3>
-                <p><strong>Step 1: Get your Auth Token</strong></p>
-                <ol>
-                    <li>Open <code>joinswsh.com</code> in any browser on computer</li>
-                    <li>Log in to your account</li>
-                    <li>Press <strong>F12</strong> (or right-click → Inspect)</li>
-                    <li>Go to <strong>Network</strong> tab</li>
-                    <li>Refresh the page or click on any album</li>
-                    <li>Find any request to <code>graphql</code></li>
-                    <li>Click on it → <strong>Headers</strong> tab</li>
-                    <li>Find <code>authorization: Bearer ...</code></li>
-                    <li>Copy the token after "Bearer " (long string)</li>
-                </ol>
-                
-                <p style="margin-top: 15px;"><strong>Step 2: Get Album ID</strong></p>
-                <p>From album URL: <code>joinswsh.com/album/<strong>ALBUM_ID</strong></code></p>
-                <p>Example: <code>0146b8f3-4c0b-4668-bb2a-89bf6b0e6083</code></p>
-
-                <p style="margin-top: 15px;"><strong>Step 3: Load Album</strong></p>
-                <p>Paste both above, click "Load Album" - done! 🎉</p>
-                
-                <p style="margin-top: 15px; color: #4ade80;">💡 Token and Album ID are saved in browser automatically!</p>
-            </div>
+        <div class="info-box" id="tokenStatus" style="display: none;">
+            <h3>✅ Connected!</h3>
+            <p>Token: <span id="tokenPreview">Not loaded</span></p>
+            <p>Album ID: <span id="gatheringIdPreview">Auto-detect from URL</span></p>
+            <button class="button" onclick="loadAlbum()">Load Album</button>
+            <button class="button secondary" onclick="clearTokens()">Clear Tokens</button>
         </div>
 
         <div class="status" id="status" style="display: none;"></div>
@@ -307,46 +228,6 @@
             authSession: ''
         };
 
-        // Load saved config on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedGatheringId = localStorage.getItem('gatheringId');
-            const savedAuthSession = localStorage.getItem('authSession');
-            
-            if (savedGatheringId) {
-                document.getElementById('gatheringId').value = savedGatheringId;
-            }
-            if (savedAuthSession) {
-                document.getElementById('authSession').value = savedAuthSession;
-            }
-        });
-
-        function tryAutoDetect() {
-            showStatus('🔍 Trying to detect token...', false);
-            
-            // Try to read cookie (will only work if on same domain)
-            const cookies = document.cookie.split(';');
-            const authCookie = cookies.find(c => c.includes('auth_session'));
-            
-            if (authCookie) {
-                const token = authCookie.split('=')[1].trim();
-                document.getElementById('authSession').value = token;
-                showStatus('✅ Token detected automatically!', false);
-            } else {
-                showStatus('❌ Auto-detect failed. Please use the bookmarklet method (see instructions below) or paste token manually.', true);
-            }
-        }
-
-        function saveConfig() {
-            const gatheringId = document.getElementById('gatheringId').value.trim();
-            const authSession = document.getElementById('authSession').value.trim();
-            
-            if (gatheringId) localStorage.setItem('gatheringId', gatheringId);
-            if (authSession) localStorage.setItem('authSession', authSession);
-            
-            showStatus('💾 Configuration saved!', false);
-        }
-
-        // GraphQL query
         const QUERY = `
             query GetGatheringAndPhotos($input: GetGatheringInput!, $photosInput: GatheringPhotosInput) {
                 getGathering(input: $input) {
@@ -371,6 +252,42 @@
             }
         `;
 
+        // Check for tokens on page load
+        window.addEventListener('load', checkTokens);
+
+        function checkTokens() {
+            // Try to get from localStorage (set by Stay extension)
+            const token = localStorage.getItem('swsh_auth_token');
+            const gatheringId = localStorage.getItem('swsh_gathering_id') || getGatheringIdFromUrl();
+
+            if (token) {
+                currentConfig.authSession = token;
+                currentConfig.gatheringId = gatheringId;
+                
+                document.getElementById('needsSetup').style.display = 'none';
+                document.getElementById('tokenStatus').style.display = 'block';
+                document.getElementById('tokenPreview').textContent = token.substring(0, 20) + '...';
+                document.getElementById('gatheringIdPreview').textContent = gatheringId || 'Paste album URL in browser';
+                
+                showStatus('✅ Tokens loaded! Ready to load album.');
+            } else {
+                showStatus('⚠️ No tokens found. Please visit joinswsh.com with Stay extension first.', true);
+            }
+        }
+
+        function getGatheringIdFromUrl() {
+            // Try to extract from URL params
+            const params = new URLSearchParams(window.location.search);
+            return params.get('album') || '';
+        }
+
+        function clearTokens() {
+            localStorage.removeItem('swsh_auth_token');
+            localStorage.removeItem('swsh_gathering_id');
+            currentConfig = { gatheringId: '', authSession: '' };
+            location.reload();
+        }
+
         function showStatus(message, isError = false) {
             const status = document.getElementById('status');
             status.style.display = 'block';
@@ -388,25 +305,38 @@
         }
 
         async function fetchPhotos(cursor = null) {
-            // Use proxy API instead of direct API call
-            const proxyUrl = '/api/proxy';
-            
-            const response = await fetch(proxyUrl, {
+            const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'authorization': `Bearer ${currentConfig.authSession}`,
+                    'x-operation-version': 'v0.0.2',
+                    'x-operation-hash': 'e2bd15ab063fc6f0949a545a581e536260a7cb10f8c0b2244261b8ec00bdfc47',
+                    'x-client-version': '1.1.15',
+                    'x-branch': 'prod'
                 },
                 body: JSON.stringify({
-                    authSession: currentConfig.authSession,
-                    gatheringId: currentConfig.gatheringId,
-                    cursor: cursor,
-                    limit: 50
+                    operationName: 'GetGatheringAndPhotos',
+                    variables: {
+                        input: { gatheringId: currentConfig.gatheringId },
+                        photosInput: {
+                            cursor: cursor,
+                            limit: 50,
+                            filterUserIds: [],
+                            filterUploaderIds: [],
+                            filterPhotoVariant: [],
+                            filterLabels: [],
+                            filterRestrictedLabels: [],
+                            filterMode: 'Or',
+                            filter: 'Active'
+                        }
+                    },
+                    query: QUERY
                 })
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             return await response.json();
@@ -416,10 +346,8 @@
             const template = item.readUrl.v0TemplateUrl;
             
             if (item.variant === 'Video' || item.variant === 'LivePhoto') {
-                // Replace TEMPLATE_PLACEHOLDER with stream/original-video/hls.m3u8
                 return template.replace('TEMPLATE_PLACEHOLDER', 'stream/original-video/hls.m3u8');
             } else {
-                // For images, use optimize/lg/contain/jpeg
                 return template.replace('TEMPLATE_PLACEHOLDER', 'optimize/lg/contain/jpeg');
             }
         }
@@ -432,13 +360,11 @@
             const url = getMediaUrl(item);
 
             if (isVideo) {
-                // Create video element with poster (thumbnail)
                 const video = document.createElement('video');
                 video.controls = false;
                 video.muted = true;
                 video.loop = true;
                 
-                // Try to load HLS
                 if (Hls.isSupported()) {
                     const hls = new Hls();
                     hls.loadSource(url);
@@ -512,7 +438,6 @@
             const modal = document.getElementById('modal');
             modal.classList.remove('active');
             
-            // Stop video playback
             const video = modal.querySelector('video');
             if (video) {
                 video.pause();
@@ -523,20 +448,18 @@
         }
 
         async function loadAlbum() {
-            const gatheringId = document.getElementById('gatheringId').value.trim();
-            const authSession = document.getElementById('authSession').value.trim();
-
-            if (!gatheringId || !authSession) {
-                showStatus('Please fill in both fields!', true);
+            if (!currentConfig.authSession) {
+                showStatus('❌ No token found! Visit joinswsh.com with Stay extension first.', true);
                 return;
             }
 
-            currentConfig = { gatheringId, authSession };
-            
-            // Save config to localStorage
-            localStorage.setItem('gatheringId', gatheringId);
-            localStorage.setItem('authSession', authSession);
-            
+            if (!currentConfig.gatheringId) {
+                const userInput = prompt('Enter Album ID (from URL: joinswsh.com/album/ALBUM_ID):');
+                if (!userInput) return;
+                currentConfig.gatheringId = userInput.trim();
+                localStorage.setItem('swsh_gathering_id', currentConfig.gatheringId);
+            }
+
             allMedia = [];
             document.getElementById('gallery').innerHTML = '';
             showLoading(true);
@@ -546,23 +469,19 @@
                 let totalPhotos = 0;
                 let loadedPhotos = 0;
 
-                // Fetch first batch to get total count
                 const firstBatch = await fetchPhotos(null);
                 const gatheringData = firstBatch.data.getGathering;
                 totalPhotos = gatheringData.numPhotos;
 
-                // Process first batch
                 const firstPhotos = gatheringData.photos.payload;
                 allMedia.push(...firstPhotos);
                 loadedPhotos += firstPhotos.length;
 
-                // Render first batch
                 renderGallery();
                 showStatus(`Loaded ${loadedPhotos} of ${totalPhotos} items...`);
 
                 cursor = gatheringData.photos.cursor;
 
-                // Fetch remaining batches
                 while (cursor) {
                     const batch = await fetchPhotos(cursor);
                     const photos = batch.data.getGathering.photos.payload;
@@ -579,9 +498,6 @@
                 }
 
                 showStatus(`✅ Successfully loaded ${allMedia.length} items!`);
-                
-                // Hide config form after successful load
-                document.getElementById('configForm').style.display = 'none';
 
             } catch (error) {
                 console.error('Error:', error);
@@ -598,7 +514,6 @@
             });
         }
 
-        // Close modal on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
